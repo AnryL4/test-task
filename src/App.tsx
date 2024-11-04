@@ -196,7 +196,6 @@ function App() {
 			setItemsToLocalStorage([]);
 		}
 	}, []);
-	console.log(items);
 
 	return (
 		<main style={{ background: '#FCEDDA', minHeight: '100vh' }}>
@@ -229,27 +228,40 @@ function App() {
 							setNewTask(event.target.value);
 						}}
 					/>
-					<Button variant='contained' type='submit'>
+					<Button
+						variant='contained'
+						type='submit'
+						sx={{ fontSize: { xs: '12px', sm: '18px' } }}
+					>
 						Создать
 					</Button>
 				</Box>
 				<Stack
 					direction='row'
 					sx={{ width: '100%', mt: 2 }}
-					divider={<Divider orientation='vertical' flexItem />}
-					spacing={2}
+					divider={
+						<Divider
+							orientation='vertical'
+							flexItem
+							sx={{ mx: { xs: 1, sm: 2 } }}
+						/>
+					}
 				>
 					{variables.map(value => {
 						return (
 							<Box width='100%' key={value}>
 								<Paper
 									sx={{
-										padding: 2,
+										padding: { sm: 2, xs: 1 },
 										background: '#EE4E34',
 										textAlign: 'center',
-										fontSize: '20px',
+										fontSize: { sm: '20px', xs: '14px' },
 										fontWeight: '700',
 										color: '#FCEDDA',
+										height: '100%',
+										display: 'flex',
+										alignItems: 'center',
+										justifyContent: 'center',
 									}}
 								>
 									{value}
@@ -261,15 +273,20 @@ function App() {
 				<Stack
 					direction='row'
 					sx={{ width: '100%', mt: 2 }}
-					divider={<Divider orientation='vertical' flexItem />}
-					spacing={2}
+					divider={
+						<Divider
+							orientation='vertical'
+							flexItem
+							sx={{ mx: { sm: 2, xs: 1 } }}
+						/>
+					}
 				>
 					{variables.map(box => {
 						return (
 							<Box width='100%' key={box}>
 								<Box
 									sx={{
-										padding: 2,
+										padding: { sm: 2 },
 										height: '100%',
 										borderRadius: '5px',
 									}}
@@ -295,11 +312,17 @@ function App() {
 													<Paper
 														key={item.id}
 														sx={{
-															padding: 2,
+															padding: {
+																sm: 2,
+																xs: 1,
+															},
 															cursor: 'pointer',
 															background:
 																'#FFBE7B',
-															fontSize: '18px',
+															fontSize: {
+																sm: '18px',
+																xs: '12px',
+															},
 															fontWeight: '500',
 															display: 'flex',
 															justifyContent:
@@ -340,6 +363,10 @@ function App() {
 															sx={{
 																'&:hover': {
 																	color: '#FCEDDA',
+																},
+																fontSize: {
+																	xs: '18px',
+																	sm: '24px',
 																},
 															}}
 															onClick={() =>
