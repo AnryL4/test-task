@@ -1,12 +1,15 @@
+import { Fragment, useEffect, useState } from 'react';
 import {
 	Box,
+	Button,
 	Container,
 	CssBaseline,
 	Divider,
 	Paper,
 	Stack,
+	TextField,
 } from '@mui/material';
-import { Fragment, useState } from 'react';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { generateUniqID } from './utils/GenerateUniqId';
 
 interface Item {
@@ -19,19 +22,33 @@ interface Item {
 const variables = ['To do', 'In Progress', 'Done'];
 
 function App() {
-	const [items, setItems] = useState<Item[]>([
-		{ title: 'задача', tags: [], progress: 'To do', id: 'sdf34' },
-		{ title: '234dfg', tags: [], progress: 'To do', id: 'dfg4523' },
-		{ title: '567ghj', tags: [], progress: 'To do', id: 'khgj3fdhv' },
-		{ title: 'sdff', tags: [], progress: 'In Progress', id: 'ft7j' },
-		{ title: 'dsfdggh', tags: [], progress: 'In Progress', id: '567mk6gh' },
-		{ title: 'fgh', tags: [], progress: 'Done', id: '7j6he463' },
-		{ title: 'vbcn4', tags: [], progress: 'To do', id: 'fgnh32223' },
-		{ title: 'rhd45', tags: [], progress: 'In Progress', id: 'ghj456hgf' },
-		{ title: '234sf', tags: [], progress: 'Done', id: 'bzx345' },
-	]);
-
+	const [items, setItems] = useState<Item[]>([]);
+	const [newTask, setNewTask] = useState('');
 	const [startItem, setStartItem] = useState<Item | null>(null);
+
+	const setItemsToLocalStorage = (items: Item[]) => {
+		localStorage.setItem('items', JSON.stringify(items));
+		setItems(items);
+	};
+
+	const createNewTask = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		if (newTask.trim()) {
+			const newData = [...items];
+			newData.push({
+				title: newTask,
+				tags: [],
+				progress: 'To do',
+				id: generateUniqID(),
+			});
+			setItemsToLocalStorage(newData);
+			setNewTask('');
+		}
+	};
+
+	const onDeleteItem = (itemId: string) => {
+		setItemsToLocalStorage([...items.filter(item => item.id !== itemId)]);
+	};
 
 	const onDragCardStartHandler = (item: Item) => {
 		setStartItem(item);
@@ -71,7 +88,7 @@ function App() {
 			} else {
 				newData[indexStartItem].progress = item.progress;
 			}
-			setItems(newData);
+			setItemsToLocalStorage(newData);
 			e.currentTarget.style.background = '#FFBE7B';
 			setStartItem(null);
 
@@ -111,7 +128,7 @@ function App() {
 			const newData = [...items];
 			const indexStartItem = items.indexOf(startItem);
 			newData[indexStartItem].progress = area;
-			setItems(newData);
+			setItemsToLocalStorage(newData);
 			setStartItem(null);
 		}
 	};
@@ -156,7 +173,7 @@ function App() {
 				progress: item.progress,
 			});
 
-			setItems(newData);
+			setItemsToLocalStorage(newData);
 			e.currentTarget.style.background = '#FFBE7B';
 			setStartItem(null);
 		}
@@ -171,11 +188,18 @@ function App() {
 		}
 	};
 
-	// const uniqueId = generateUniqID();
-	// console.log(uniqueId);
+	useEffect(() => {
+		const items = localStorage.getItem('items');
+		if (items) {
+			setItems(JSON.parse(items));
+		} else {
+			setItemsToLocalStorage([]);
+		}
+	}, []);
+	console.log(items);
 
 	return (
-		<main style={{ background: '#F9F3ED', minHeight: '100vh' }}>
+		<main style={{ background: '#FCEDDA', minHeight: '100vh' }}>
 			<CssBaseline />
 			<Container
 				maxWidth={false}
@@ -186,9 +210,32 @@ function App() {
 					minHeight: '100vh',
 				}}
 			>
+				<Box
+					component='form'
+					display='flex'
+					sx={{ flexWrap: 'nowrap', gap: '5px' }}
+					onSubmit={createNewTask}
+				>
+					<TextField
+						id='newTask'
+						label='Новая задача'
+						variant='outlined'
+						fullWidth
+						required
+						value={newTask}
+						onChange={(
+							event: React.ChangeEvent<HTMLInputElement>
+						) => {
+							setNewTask(event.target.value);
+						}}
+					/>
+					<Button variant='contained' type='submit'>
+						Создать
+					</Button>
+				</Box>
 				<Stack
 					direction='row'
-					sx={{ width: '100%' }}
+					sx={{ width: '100%', mt: 2 }}
 					divider={<Divider orientation='vertical' flexItem />}
 					spacing={2}
 				>
@@ -254,6 +301,11 @@ function App() {
 																'#FFBE7B',
 															fontSize: '18px',
 															fontWeight: '500',
+															display: 'flex',
+															justifyContent:
+																'space-between',
+															alignItems:
+																'center',
 														}}
 														draggable
 														onDragStart={() =>
@@ -284,6 +336,18 @@ function App() {
 														}
 													>
 														{item.title}
+														<HighlightOffIcon
+															sx={{
+																'&:hover': {
+																	color: '#FCEDDA',
+																},
+															}}
+															onClick={() =>
+																onDeleteItem(
+																	item.id
+																)
+															}
+														/>
 													</Paper>
 													<Box
 														sx={{
